@@ -13,26 +13,22 @@ import uk.co.digitaljeeves.retrofitexample.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
+    lateinit var retService: IAlbumService
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val retService: IAlbumService = RetrofitInstance.getRetrofitInstance().create(IAlbumService::class.java)
+        retService = RetrofitInstance.getRetrofitInstance().create(IAlbumService::class.java)
 
-        val pathResponse:LiveData<Response<AlbumsItem>> = liveData {
-            val response = retService.getAlbum(3)
-            emit(response)
-        }
+        getRequestWithQueryParameters()
+        getRequestWithPathParameters()
 
+    }
+    private fun getRequestWithQueryParameters(){
         val responseLiveData:LiveData<Response<Albums>> = liveData {
             val response = retService.getUsersAlbums(3)
             emit(response)
         }
-        pathResponse.observe(this, Observer {
-            val item = it.body()
-            Toast.makeText(this, item?.title, Toast.LENGTH_LONG).show()
-
-        })
         responseLiveData.observe(this, Observer {
             val albumsList = it.body()?.listIterator()
             if (albumsList != null){
@@ -40,12 +36,25 @@ class MainActivity : AppCompatActivity() {
                     val albumsItem = albumsList.next()
                     val result =
                         " Album title : ${albumsItem.title}\n"+
-                        " Album id : ${albumsItem.id}\n"+
-                        " user id : ${albumsItem.userId}\n\n\n"
+                                " Album id : ${albumsItem.id}\n"+
+                                " user id : ${albumsItem.userId}\n\n\n"
                     Log.i("MyTag", result)
                     binding.tvTitle.append(result)
                 }
             }
+        })
+    }
+    private fun getRequestWithPathParameters(){
+        val pathResponse:LiveData<Response<AlbumsItem>> = liveData {
+            val response = retService.getAlbum(3)
+            emit(response)
+        }
+
+
+        pathResponse.observe(this, Observer {
+            val item = it.body()
+            Toast.makeText(this, item?.title, Toast.LENGTH_LONG).show()
+
         })
     }
 }
