@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         retService = RetrofitInstance.getRetrofitInstance().create(IAlbumService::class.java)
 
         getRequestWithQueryParameters()
-        getRequestWithPathParameters()
+        //getRequestWithPathParameters()
 
     }
     private fun getRequestWithQueryParameters(){
