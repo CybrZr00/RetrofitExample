@@ -3,6 +3,7 @@ package uk.co.digitaljeeves.retrofitexample
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.liveData
@@ -17,10 +18,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val retService: IAlbumService = RetrofitInstance.getRetrofitInstance().create(IAlbumService::class.java)
+
+        val pathResponse:LiveData<Response<AlbumsItem>> = liveData {
+            val response = retService.getAlbum(3)
+            emit(response)
+        }
+
         val responseLiveData:LiveData<Response<Albums>> = liveData {
             val response = retService.getUsersAlbums(3)
             emit(response)
         }
+        pathResponse.observe(this, Observer {
+            val item = it.body()
+            Toast.makeText(this, item?.title, Toast.LENGTH_LONG).show()
+
+        })
         responseLiveData.observe(this, Observer {
             val albumsList = it.body()?.listIterator()
             if (albumsList != null){
