@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         val retService: IAlbumService = RetrofitInstance.getRetrofitInstance().create(IAlbumService::class.java)
         val responseLiveData:LiveData<Response<Albums>> = liveData {
-            val response = retService.getAlbums()
+            val response = retService.getUsersAlbums(3)
             emit(response)
         }
         responseLiveData.observe(this, Observer {
